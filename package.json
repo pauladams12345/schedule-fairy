@@ -1,5 +1,5 @@
 {
-  "name": "indaba",
+  "name": "schedule-fairy",
   "version": "1.0.0",
   "description": "Web app for meeting scheduling accessible to Oregon State University users",
   "main": "app.js",
@@ -16,17 +16,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pauladams12345/indaba.git"
+    "url": "git+https://github.com/pauladams12345/schedule-fairy.git"
   },
   "keywords": [
-    "indaba"
+    "schedule",
+    "fairy",
+    "scheduler",
+    "meeting",
+    "time",
+    "event"
   ],
-  "author": "Paul Adams, Everett Williams",
+  "author": "Paul Adams",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pauladams12345/indaba/issues"
+    "url": "https://github.com/pauladams12345/schedule-fairy/issues"
   },
-  "homepage": "https://github.com/pauladams12345/indaba#readme",
+  "homepage": "https://github.com/pauladams12345/schedule-fairy#readme",
   "dependencies": {
     "@sendgrid/helpers": "^6.4.0",
     "@sendgrid/mail": "^6.4.0",

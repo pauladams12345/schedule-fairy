@@ -16,13 +16,13 @@ module.exports.sendInvitationEmail = function(organizerName, eventName, eventDes
 		messageText += "Event description: " + eventDescription + "\n\n";
 	}
 	messageText += "Click below to check out the event details and make your reservation\n\n" +
-	"https://indaba-scheduler.herokuapp.com/make-reservations/" + eventId;
+	"https://schedule-fairy.herokuapp.com/make-reservations/" + eventId;
 
 	let msg = {
 		to: emails,
 		from: {
-			'name': 'Indaba Scheduler',
-			'email': 'noreply@indaba-scheduler.herokuapp.com'
+			'name': 'Schedule Fairy',
+			'email': 'noreply@schedule-fairy.herokuapp.com'
 		},
 		subject: 'Invitation to ' + eventName,
 		text: messageText

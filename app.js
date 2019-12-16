@@ -61,5 +61,5 @@ app.use(function(err,req,res,next){
 
 // start server
 app.listen(process.env.PORT || 3000, function(){
-    console.log('Indaba server started!');
+    console.log('Schedule Fairy server started!');
 });
