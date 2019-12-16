@@ -1,0 +1,24 @@
+#/bin/bash
+# This command fixesup one commit onto his parent
+set -e
+
+# We need a commit from the first argument of that command
+commit=${1:?No commit given as first argument}
+startingbranch=$(git rev-parse --abbrev-ref HEAD)
+
+# Checkout the parent of the asked commit
+git checkout "$commit"
+git checkout HEAD~
+
+# Merge the commit into it's parent, keeping the commit message of the parent
+git merge --squash "$commit"
+git add .
+git add --update
+git commit --amend --no-edit
+
+# Store the current commit
+newcommit=$(git rev-parse HEAD)
+
+# Rebase the starting branch onto the new commit
+git checkout "$startingbranch"
+git rebase "$newcommit"
