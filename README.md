@@ -1,8 +1,7 @@
-# Indaba
+# Schedule Fairy
 
-Indaba is a meeting scheduling application for Oregon State University students, faculty, and staff. When complete, the app will allows users to organize events with 1 or more time slots and send invitation emails directing people to RSVP. In the app, invitees can register for the time slots of their choice, or respond that they are unable to attend. Indaba will provide an intuitive interface for users to manage reservations they have made and events they have organized.
+Schedule fairy is a free, open-source meeting scheduling app. Create your event. Send invitations. Manage RSVPs. It's all as simple as waving a magic wand!
 
-This application is being developed as a capstone project for OSU's CS 467 course.
 
 ## Built With
 
@@ -15,6 +14,11 @@ This application is being developed as a capstone project for OSU's CS 467 cours
 
 ## Authors
 
+Schedule Fairy is maintained by:
+
 * [Paul Adams](https://github.com/pauladams12345)
 
+Much of this project is based off of [Indaba](https://github.com/pauladams12345/indaba), a scheduling app created for Oregon State University by:
+
 * [Everett Williams](https://github.com/Everett1914)
+* [Paul Adams](https://github.com/pauladams12345)
