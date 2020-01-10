@@ -1,24 +1,41 @@
 // Base application. Run from terminal with "node app.js"
 
 var express =       require('express'),
-    bodyParser =    require('body-parser'),
-    session =       require('express-session'),
-    handlebars =    require('express-handlebars'),
-    request =       require('request'),
-    dbcon =         require('./config/dbcon.js'),
-    helmet =        require('helmet'),
-    MySQLStore =    require('express-mysql-session')(session),
-    sessionStore =  new MySQLStore(dbcon),
-    passport =      require('passport'),
-    LocalStrategy = require(passport-local).Strategy;
+  bodyParser =    require('body-parser'),
+  session =       require('express-session'),
+  handlebars =    require('express-handlebars'),
+  request =       require('request'),
+  dbcon =         require('./config/dbcon.js'),
+  helmet =        require('helmet'),
+  MySQLStore =    require('express-mysql-session')(session),
+  sessionStore =  new MySQLStore(dbcon),
+  passport =      require('passport'),
+  LocalStrategy = require(passport-local).Strategy,
+  user =          require('./user.js');
 
 passport.use(new Strategy(
-    function(username, passport, done) {
-        //find user in db
-        //handle errors
-        // if password doesn't match, {return done(null, false)}
-        // return done(null, user)
-    }))
+  // Options
+  {
+    usernameField: 'username',
+    passwordField: 'password'
+  },
+  // Callback
+  function(username, password, done) {
+    const rows = await user.findUser(attributes.onid);
+
+    // No matching user
+    if (rows.length == 0) {
+      return done(null, false);
+    }
+
+    // Password doesn't match
+
+
+    // Correct password for user
+    else {
+      return done(null, user);
+    }
+  }));
 
 var app = express();
 
@@ -28,8 +45,8 @@ app.use(bodyParser.json());
 
 // set handlebars as view engine, allow omission of .handlebars extension
 app.engine('handlebars', handlebars({
-    defaultLayout: 'main',
-    helpers: require('./helpers/handlebarsHelpers.js')
+  defaultLayout: 'main',
+  helpers: require('./helpers/handlebarsHelpers.js')
 }));
 app.set('view engine', 'handlebars');
 
@@ -38,10 +55,10 @@ app.use(express.static(__dirname + '/public'));
 
 // configure sessions
 app.use(session({
-    secret: "We should pick a real secret",
-    resave: false,
-    saveUninitialized: false,
-    store: sessionStore
+  secret: "We should pick a real secret",
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore
 }));
 
 app.use(passport.initialize());
@@ -62,18 +79,18 @@ app.use(require('./routes/pastEvents.js'));
 
 // handle errors
 app.use(function(req,res){
-    res.status(404);
-    res.render('404');
+  res.status(404);
+  res.render('404');
 });
 
 app.use(function(err,req,res,next){
-    console.error(err.stack);
-    res.type('plain/text');
-    res.status(500);
-    res.send('500');
+  console.error(err.stack);
+  res.type('plain/text');
+  res.status(500);
+  res.send('500');
 });
 
 // start server
 app.listen(process.env.PORT || 3000, function(){
-    console.log('Schedule Fairy server started!');
+  console.log('Schedule Fairy server started!');
 });

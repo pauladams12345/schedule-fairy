@@ -8,7 +8,8 @@ var Router = 		require('express-promise-router'),
 	invitation =	require('../models/invitation.js'),
 	createsEvent =	require('../models/createsEvent.js'),
 	helpers = 		require('../helpers/helpers.js'),
-	email =			require('../helpers/email.js');
+	email =			require('../helpers/email.js'),
+	passport = 		require('passport');
 
 // Redirects new arrivals to landing page. Handles authentication
 // for users redirected from CAS login then redirects to personal homepage
@@ -67,9 +68,10 @@ router.get('/login', async function (req, res, next) {
 	res.render('login.handlebars', context);
 });
 
+// Log user in and redirect to their destination, else return user to login page
 app.post('/login', 
-	passport.authenticate('local'),
-	function(req, res,) {
+	passport.authenticate('local', {failureRedirect: '/login'}),
+	function(req, res) {
 		res.redirect(req.session.destination);
 	});
 
