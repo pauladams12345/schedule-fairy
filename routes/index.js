@@ -12,47 +12,25 @@ var Router = 		require('express-promise-router'),
 
 // Redirects new arrivals to landing page. Handles authentication
 // for users redirected from CAS login then redirects to personal homepage
-router.get('/', async function (req, res, next) {
+router.get('/:destination', async function (req, res, next) {
 
-	// If there's no CAS ticket in the query string, redirect to the landing page
-	if (!req.query.ticket) {
-		res.redirect('/login');
+	// If the user is not logged in, store their destination and redirect to login
+	if (!req.session.userId) {
+		req.session.destination = req.query.destination || "/";	// If destination is not specified, 
+		res.redirect('/login');									// redirect to their homepage after login.
 	}
 
-	// Otherwise, user has been redirected from CAS
-	// Validate ticket, redirect to personal homepage
+	// If user is logged in, redirect to the homepage
 	else {
-
-		// Get ticket from query string
-		let cas_ticket = req.query.ticket;
-
-		// Validate ticket and get user's attributes
-		let attributes = await helpers.validateTicket(cas_ticket);
-
-		// Store user's name and onid in the session
-		req.session.onid = attributes.onid;
-		req.session.firstName = attributes.firstName;
-
-		// If new user, store in database
-		await helpers.createUserIfNew(attributes);
-
-		// If the user was trying to reserve a time slot, redirect them to that page
-		if (req.session.eventId) {
-			res.redirect('/make-reservations/' + req.session.eventId);
-			delete req.session['eventId'];
-		}
-
-		// Otherwise, redirect them to the homepage
-		else {
-			res.redirect('/home');
-		}
+		res.redirect('/home');
 	}
+	
 });
 
 // Displays user's personal homepage
 router.get('/home', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.onid) {
+	if (!req.session.userId) {
 		res.redirect('/login');
 	}
 	// If there is a session, render user's homepage
@@ -88,6 +66,12 @@ router.get('/login', async function (req, res, next) {
 	context.stylesheets = ['main.css', 'login.css'];
 	res.render('login.handlebars', context);
 });
+
+app.post('/login', 
+	passport.authenticate('local'),
+	function(req, res,) {
+		res.redirect(req.session.destination);
+	});
 
 // Destroys current session and redirects to landing page
 router.get('/logout', async function (req, res, next) {

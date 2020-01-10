@@ -8,7 +8,17 @@ var express =       require('express'),
     dbcon =         require('./config/dbcon.js'),
     helmet =        require('helmet'),
     MySQLStore =    require('express-mysql-session')(session),
-    sessionStore =  new MySQLStore(dbcon);
+    sessionStore =  new MySQLStore(dbcon),
+    passport =      require('passport'),
+    LocalStrategy = require(passport-local).Strategy;
+
+passport.use(new Strategy(
+    function(username, passport, done) {
+        //find user in db
+        //handle errors
+        // if password doesn't match, {return done(null, false)}
+        // return done(null, user)
+    }))
 
 var app = express();
 
@@ -33,6 +43,10 @@ app.use(session({
     saveUninitialized: false,
     store: sessionStore
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 // Set security-related http headers
 app.use(helmet());
