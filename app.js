@@ -10,32 +10,28 @@ var express =       require('express'),
   MySQLStore =    require('express-mysql-session')(session),
   sessionStore =  new MySQLStore(dbcon),
   passport =      require('passport'),
-  LocalStrategy = require(passport-local).Strategy,
-  user =          require('./user.js');
+  GoogleStrategy = require(passport-google-oauth20).Strategy;
 
-passport.use(new Strategy(
-  // Options
-  {
-    usernameField: 'username',
-    passwordField: 'password'
+passport.use(new GoogleStrategy({
+    clientID: process.env.OAUTH_CLIENT_ID,
+    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    callbackURL: 'https://schedule-fairy.herokuapp.com/auth'
   },
-  // Callback
-  function(username, password, done) {
-    const rows = await user.findUser(attributes.onid);
+  async function(accessToken, refreshToken, profile, cb) {
+    //Find user or create new one
+    let rows = await user.findUser(profile.id);
 
-    // No matching user
+    // No matching user, create one
     if (rows.length == 0) {
-      return done(null, false);
+      await user.createUser(onid, firstName, lastName, email);
+      rows = await user.findUser(attributes.onid);
     }
 
-    // Password doesn't match
+    return cb(null, rows[0]);
 
+  }
+));
 
-    // Correct password for user
-    else {
-      return done(null, user);
-    }
-  }));
 
 var app = express();
 
