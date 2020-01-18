@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `heroku_ec64700659d7c00` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `heroku_ec64700659d7c00`;
 -- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
 -- Host: us-cdbr-iron-east-05.cleardb.net    Database: heroku_ec64700659d7c00
@@ -169,4 +171,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-13 16:09:37
+-- Dump completed on 2020-01-17 16:33:52
