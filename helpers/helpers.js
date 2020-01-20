@@ -6,60 +6,60 @@ var parser =	require('xml2json'),
 	slot =    	require('../models/slot.js'),
 	event =		require('../models/event.js');
 
-// Send validation request to CAS server with ticket, return attributes from response
-module.exports.validateTicket = async function(cas_ticket){
-	try {
-		// Options for the CAS validation request
-		let options = {
-			method: 'GET',
-			uri: 'https://login.oregonstate.edu/idp/profile/cas/serviceValidate',
-			headers: {
-				'Content-Type': 'text/xml'
-			},
-			qs: {
-				ticket: cas_ticket,
-				service: 'https://indaba-scheduler.herokuapp.com/'
-			}
-		};
+// // Send validation request to CAS server with ticket, return attributes from response
+// module.exports.validateTicket = async function(cas_ticket){
+// 	try {
+// 		// Options for the CAS validation request
+// 		let options = {
+// 			method: 'GET',
+// 			uri: 'https://login.oregonstate.edu/idp/profile/cas/serviceValidate',
+// 			headers: {
+// 				'Content-Type': 'text/xml'
+// 			},
+// 			qs: {
+// 				ticket: cas_ticket,
+// 				service: 'https://indaba-scheduler.herokuapp.com/'
+// 			}
+// 		};
 
-		// Validate ticket
-		const cas_info = await rp(options);
+// 		// Validate ticket
+// 		const cas_info = await rp(options);
 
-		// Parse results from validation, converting from XML to JSON
-		let response = JSON.parse(parser.toJson(cas_info));
-		let cas_attributes = response['cas:serviceResponse']['cas:authenticationSuccess']['cas:attributes'];
+// 		// Parse results from validation, converting from XML to JSON
+// 		let response = JSON.parse(parser.toJson(cas_info));
+// 		let cas_attributes = response['cas:serviceResponse']['cas:authenticationSuccess']['cas:attributes'];
 
-		// Extract user's attributes
-		let attributes = {};
-		attributes.onid = cas_attributes['cas:uid'];
-		attributes.firstName = cas_attributes['cas:firstname'];
-		attributes.lastName = cas_attributes['cas:lastname'];
-		attributes.fullName = cas_attributes['cas:fullname'];
-		attributes.email = cas_attributes['cas:email'];
+// 		// Extract user's attributes
+// 		let attributes = {};
+// 		attributes.onid = cas_attributes['cas:uid'];
+// 		attributes.firstName = cas_attributes['cas:firstname'];
+// 		attributes.lastName = cas_attributes['cas:lastname'];
+// 		attributes.fullName = cas_attributes['cas:fullname'];
+// 		attributes.email = cas_attributes['cas:email'];
 
-		// Return user's attributes
-		return attributes;
-	}
-	catch (err) {
-		console.log(err);
-	}
-};
+// 		// Return user's attributes
+// 		return attributes;
+// 	}
+// 	catch (err) {
+// 		console.log(err);
+// 	}
+// };
 
-// Check if user exists in database. If not, create an entry.
-module.exports.createUserIfNew = async function(attributes){
-	try {
-		// Check if user exists
-		const rows = await user.findUser(attributes.onid);
+// // Check if user exists in database. If not, create an entry.
+// module.exports.createUserIfNew = async function(attributes){
+// 	try {
+// 		// Check if user exists
+// 		const rows = await user.findUser(attributes.onid);
 
-		// If not, add an entry
-		if (rows.length == 0) {
-			await user.createUser(attributes.onid, attributes.firstName, attributes.lastName, attributes.email);
-		}
-	}
-	catch (err){
-		console.log(err);
-	}
-};
+// 		// If not, add an entry
+// 		if (rows.length == 0) {
+// 			await user.createUser(attributes.onid, attributes.firstName, attributes.lastName, attributes.email);
+// 		}
+// 	}
+// 	catch (err){
+// 		console.log(err);
+// 	}
+// };
 
 // Take a JS date object, convert it to an ISO-formatted string,
 // and extract the date and time from that string
@@ -71,10 +71,10 @@ module.exports.parseDateTimeString = function (slot){
 
 // Find all of a user's upcoming reserved slots and gather the needed information
 // to display those slots in an organized way
-module.exports.processUpcomingReservationsForDisplay = async function(onid) {
+module.exports.processUpcomingReservationsForDisplay = async function(user_id) {
 	let eventIds = [];											// keep track of which events we've seen
 	let events = {};											// hold info for each event
-	let upcomingSlots = await slot.findUpcomingUserSlots(onid);	// all of a user's upcoming slots
+	let upcomingSlots = await slot.findUpcomingUserSlots(user_id);	// all of a user's upcoming slots
 
 	// Process each upcoming slot the user has reserved
 	for (let upcomingSlot of upcomingSlots) {
@@ -84,7 +84,7 @@ module.exports.processUpcomingReservationsForDisplay = async function(onid) {
 			eventIds.push(upcomingSlot.event_id);				// add current event ID to tracking array
 			events[upcomingSlot.event_id] = {					// create event object
 				title: upcomingSlot.event_name,
-				creator: upcomingSlot.creator_first_name + " " + upcomingSlot.creator_last_name,
+				creator: upcomingSlot.creator_name,
 				description: upcomingSlot.description,
 				visibility: upcomingSlot.visibility,
 				event_id: upcomingSlot.event_id,
@@ -108,10 +108,10 @@ module.exports.processUpcomingReservationsForDisplay = async function(onid) {
 
 // Find all of a user's past reserved slots and gather the needed information
 // to display those slots in an organized way
-module.exports.processPastReservationsForDisplay = async function(onid) {
+module.exports.processPastReservationsForDisplay = async function(user_id) {
 	let eventIds = [];											// keep track of which events we've seen
 	let events = {};											// hold info for each event
-	let pastSlots = await slot.findPastUserSlots(onid);			// all of a user's past slots
+	let pastSlots = await slot.findPastUserSlots(user_id);			// all of a user's past slots
 
 	// Process each past slot the user has reserved
 	for (let pastSlot of pastSlots) {
@@ -121,7 +121,7 @@ module.exports.processPastReservationsForDisplay = async function(onid) {
 			eventIds.push(pastSlot.event_id);					// add current event ID to tracking array
 			events[pastSlot.event_id] = {						// create event object
 				title: pastSlot.event_name,
-				creator: pastSlot.creator_first_name + " " + pastSlot.creator_last_name,
+				creator: pastSlot.creator_name,
 				description: pastSlot.description,
 				visibility: pastSlot.visibility,
 				reservations: []								// array to hold each past reserved slot for this event
@@ -154,10 +154,10 @@ module.exports.processEventSlots = async function (existingSlots){
 		};
 		const attendees = await slot.findSlotAttendees(resv.slot_id);	// add attendee info
 		for (let attendee of attendees){
-			slots[resv.slot_id].attendees[attendee.onid] = {
+			slots[resv.slot_id].attendees[attendee.user_id] = {
 				slotId: resv.slot_id,
-				name: attendee.first_name + ' ' + attendee.last_name,
-				email: attendee.ONID_email
+				name: attendee.name,
+				email: attendee.email
 			};
 		}
 	}

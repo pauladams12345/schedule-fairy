@@ -10,7 +10,7 @@ module.exports.createInvitations = async function(eventId, emails) {
 
 		for (let email of emails) {
 			await connection.query(
-			"INSERT INTO `indaba_db`.`Invitation` " +
+			"INSERT INTO `Invitation` " +
 			"(`fk_event_id`, `email_address`) VALUES (?, ?);", 
 			[eventId, email]);
 		}

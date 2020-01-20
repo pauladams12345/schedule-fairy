@@ -4,13 +4,13 @@ var	dbcon = 	require('../config/dbcon.js'),
 	sql =   	require('mysql2/promise');
 
 // Create row in Reserve_Slot with the given information
-module.exports.createReservation = async function(onid, slotId) {
+module.exports.createReservation = async function(user_id, slotId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
 		"INSERT INTO `Reserve_Slot` " +
-		"(`fk_onid`,`fk_slot_id`) VALUES (?,?)",
-		  [onid, slotId]);
+		"(`fk_user_id`,`fk_slot_id`) VALUES (?,?)",
+		  [user_id, slotId]);
 		connection.end();
 	}
 	catch (err) {
@@ -18,14 +18,14 @@ module.exports.createReservation = async function(onid, slotId) {
 	}
 };
 
-// Delete reservation for the corresponding onid and slot Id
-module.exports.deleteReservation = async function(onid, slotId){
+// Delete reservation for the corresponding user id and slot Id
+module.exports.deleteReservation = async function(user_id, slotId){
 	try{
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
 		"DELETE FROM `Reserve_Slot` " +
-		"WHERE `fk_onid` = ? and `fk_slot_id` = ?;",
-		 [onid, slotId]);
+		"WHERE `fk_user_id` = ? and `fk_slot_id` = ?;",
+		 [user_id, slotId]);
 		connection.end();
 	}
 	catch (err) {
@@ -53,10 +53,10 @@ module.exports.getEventAttendees = async function(eventId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-		"SELECT DISTINCT om.first_name, om.last_name, om.ONID_email, om.onid " +
+		"SELECT DISTINCT u.name, u.email, u.user_id " +
 		"FROM `Reserve_Slot` rs " +
 		"INNER JOIN `Slot` s ON rs.fk_slot_id = s.slot_id " +
-		"INNER JOIN `OSU_member` om ON rs.fk_onid = om.onid " +
+		"INNER JOIN `user` u ON rs.fk_user_id = u.user_id " +
 		"INNER JOIN `Event` e ON s.fk_event_id = e.event_id " +
 		"WHERE e.event_id = ?", [eventId]);
 		connection.end();
@@ -68,7 +68,7 @@ module.exports.getEventAttendees = async function(eventId) {
 };
 
 // Return the number of total reservations a user has made for a given event.
-module.exports.getNumUserReservations = async function(onid, eventId) {
+module.exports.getNumUserReservations = async function(user_id, eventId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
@@ -76,7 +76,7 @@ module.exports.getNumUserReservations = async function(onid, eventId) {
 		"FROM `Slot` s " +
 		"INNER JOIN `Event` e ON s.fk_event_id = e.event_id " +
 		"INNER JOIN `Reserve_Slot` rs ON rs.fk_slot_id = s.slot_id " +
-		"WHERE rs.fk_onid = ? AND s.fk_event_id = ?", [onid, eventId]);
+		"WHERE rs.fk_user_id = ? AND s.fk_event_id = ?", [user_id, eventId]);
 		connection.end();
 		return rows[0].num;
 	}
@@ -86,7 +86,7 @@ module.exports.getNumUserReservations = async function(onid, eventId) {
 };
 
 // Return the slot Ids for each reservation a given user has made for a given event.
-module.exports.getSlotIdsByUserAndEvent = async function(onid, eventId) {
+module.exports.getSlotIdsByUserAndEvent = async function(user_id, eventId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
@@ -94,7 +94,7 @@ module.exports.getSlotIdsByUserAndEvent = async function(onid, eventId) {
 		"FROM `Reserve_Slot` rs " +
 		"INNER JOIN `Slot` s ON s.slot_id = rs.fk_slot_id " +
 		"INNER JOIN `Event` e ON s.fk_event_id = e.event_id " +
-		"WHERE rs.fk_onid = ? AND s.fk_event_id = ?", [onid, eventId]);
+		"WHERE rs.fk_user_id = ? AND s.fk_event_id = ?", [user_id, eventId]);
 		connection.end();
 		return rows;
 	}

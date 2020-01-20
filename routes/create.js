@@ -13,7 +13,7 @@ var Router = 		require('express-promise-router'),
 // Displays "Create New Event" page
 router.get('/create', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.onid) {
+	if (!req.session.user_id) {
 		res.redirect('/login');
 	}
 	else {
@@ -56,7 +56,7 @@ router.post('/create', async function (req, res, next) {
 		defaultMaxAttendees, maxResvPerAttendees, description, visibility);
 
 	// Store the event creator in the database
-	await createsEvent.createCreatesEvent(eventId, req.session.onid);
+	await createsEvent.createCreatesEvent(eventId, req.session.user_id);
 
 	// Store the invitations (users emails) in the database
 	await invitation.createInvitations(eventId, emails);

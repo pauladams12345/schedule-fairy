@@ -12,13 +12,13 @@ var Router = 		require('express-promise-router'),
 // Display a user's Past Events page
 router.get('/past-events', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.onid) {
+	if (!req.session.user_id) {
 		res.redirect('/login');
 	}
 
 	// If there is a session, render user's past events
 	else {
-		let pastEvents = await createsEvent.getPastUserEvents(req.session.onid);
+		let pastEvents = await createsEvent.getPastUserEvents(req.session.user_id);
 		let events = [];
 
 		for (let pastEvent of pastEvents) {

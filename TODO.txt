@@ -1,0 +1,20 @@
+squash commits
+code review of passport stuff
+set up redirects
+secure sessions
+remove indaba branding
+change color scheme
+set up facebook login
+remove unused code
+test
+
+x change first_name and last_name references to use just name
+deal with null values for facebookid
+
+update OSU_Member table
+	remove first_name, last_name
+	add google_id
+	add facebook_id
+	rename to user
+create privacy policy
+	post to /privacy-policy

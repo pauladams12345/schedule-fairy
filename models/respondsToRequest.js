@@ -4,13 +4,13 @@ var	dbcon = 	require('../config/dbcon.js'),
 	sql =   	require('mysql2/promise');
 
 // Create row with the given information
-module.exports.createResponse = async function(onid, eventId, response) {
+module.exports.createResponse = async function(user_id, eventId, response) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
 		"INSERT INTO `Responds_To_Request`" +
-		"(`fk_onid`,`fk_event_id`, `attending`) VALUES (?,?,?)",
-		  [onid, eventId, response]);
+		"(`fk_user_id`,`fk_event_id`, `attending`) VALUES (?,?,?)",
+		  [user_id, eventId, response]);
 		connection.end();
 	}
 	catch (err) {
@@ -18,15 +18,15 @@ module.exports.createResponse = async function(onid, eventId, response) {
 	}
 };
 
-// Update attending to the specified value for a given onid and eventId
-module.exports.updateResponse = async function(onid, eventId, response) {
+// Update attending to the specified value for a given user_id and eventId
+module.exports.updateResponse = async function(user_id, eventId, response) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
 		"UPDATE `Responds_To_Request` " +
 		"SET `attending` = ? " +
-		"WHERE `fk_onid`= ? AND `fk_event_id`= ?",
-		[response, onid, eventId]);
+		"WHERE `fk_user_id`= ? AND `fk_event_id`= ?",
+		[response, user_id, eventId]);
 		connection.end();
 	}
 	catch (err) {
@@ -34,16 +34,16 @@ module.exports.updateResponse = async function(onid, eventId, response) {
 	}
 };
 
-// Get the value of attending from a row with the given onid and eventId
+// Get the value of attending from a row with the given user_id and eventId
 // Returns the entire rows array (even if empty), not just the response
-module.exports.getResponse = async function(onid, eventId) {
+module.exports.getResponse = async function(user_id, eventId) {
 	try {
 const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
 		"SELECT `attending` " +
 		"FROM `Responds_To_Request` " +
-		"WHERE `fk_onid` = ? AND `fk_event_id` = ?",
-		  [onid, eventId]);
+		"WHERE `fk_user_id` = ? AND `fk_event_id` = ?",
+		  [user_id, eventId]);
 		connection.end();
 		return rows;
 	}
@@ -52,7 +52,7 @@ const connection = await sql.createConnection(dbcon);
 	}
 };
 
-// Delete a row with the given onid and eventId
+// Delete a row with the given eventId
 module.exports.deleteResponsesForEvent = async function(eventId) {
 	try {
 		const connection = await sql.createConnection(dbcon);

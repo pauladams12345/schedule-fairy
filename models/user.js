@@ -1,16 +1,16 @@
-// Database functions most closely related to the OSU_member table
+// Database functions most closely related to the user table
 
 var	dbcon = 	require('../config/dbcon.js'),
 	sql =   	require('mysql2/promise');
 
-// Query database for user by onid, return matching row
-module.exports.findUser = async function(onid) {
+// Query database for user by google id, return matching row
+module.exports.findUserByGoogleId = async function(googleId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-		"SELECT * FROM `OSU_member` " +
-		"WHERE onid = ?", 
-		[onid]);
+		"SELECT * FROM `user` " +
+		"WHERE google_id = ?", 
+		[googleId]);
 		connection.end();
 		return rows;
 	} 
@@ -19,15 +19,31 @@ module.exports.findUser = async function(onid) {
 	}
 };
 
-// Create row in OSU_member with the given information
-module.exports.createUser = async function(onid, firstName, lastName, email) {
+// Query database for user by user id, return matching row
+module.exports.findUserByUserId = async function(userId) {
+	try {
+		const connection = await sql.createConnection(dbcon);
+		const [rows, fields] = await connection.query(
+		"SELECT * FROM `user` " +
+		"WHERE user_id = ?", 
+		[userId]);
+		connection.end();
+		return rows;
+	} 
+	catch (err) {
+		console.log(err);
+	}
+};
+
+// Create row in user table with the given information
+module.exports.createUser = async function(name, email, googleId, facebookId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
-		"INSERT INTO indaba_db.OSU_member " +
-		"(`onid`,`first_name`,`last_name`,`ONID_email`) " +
-		"VALUES (?,?,?,?)",
-		[onid, firstName, lastName, email]);
+		"INSERT INTO `heroku_ec64700659d7c00`.`user` " +
+		"(`name`, `email`, `google_id`, `facebook_id`) " +
+		"VALUES (?, ?, ?, ?);",
+		[name, email, googleId, facebookId]);
 		connection.end();
 	}
 	catch (err) {
