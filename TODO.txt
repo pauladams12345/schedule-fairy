@@ -1,20 +1,19 @@
-squash commits
+committed
+more config for google auth
+
+planned commits
 code review of passport stuff
 set up redirects
 secure sessions
 remove indaba branding
 change color scheme
 set up facebook login
+	set up facebook account ????
+	add facebook auth module
+	set up app strategy
+	handle edge cases for existing users logging in w/ new auth provider
 remove unused code
 test
-
-x change first_name and last_name references to use just name
-deal with null values for facebookid
-
-update OSU_Member table
-	remove first_name, last_name
-	add google_id
-	add facebook_id
-	rename to user
-create privacy policy
-	post to /privacy-policy
+add route for /privacy-policy
+add change email option
+add change name option
