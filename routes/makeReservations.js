@@ -14,7 +14,7 @@ var Router = 		require('express-promise-router'),
 // Displays "Make a reservation" page for the given event
 router.get('/make-reservations/:eventId', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.user_id) {
+	if (!req.user) {
 		req.session.eventId = req.params.eventId;	// Store the event the user wishes to register for so they can get back to this page
 		res.redirect('/login');
 	}
@@ -22,7 +22,7 @@ router.get('/make-reservations/:eventId', async function (req, res, next) {
 	// If there is a session, render users past reservations
 	else {
 		let context = {};
-		let user_id = req.session.user_id;
+		let user_id = req.user.user_id;
 		eventId = req.params.eventId;
 
 		context.eventDetails = await event.findEvent(eventId);
@@ -49,13 +49,13 @@ router.get('/make-reservations/:eventId', async function (req, res, next) {
 
 // Process the submitted form to make new reservations
 router.post('/make-reservations', async function (req, res, next) {
-	if (!req.session.user_id) {
+	if (!req.user) {
 		res.redirect('../login');
 	}
 	else{
 		let context = {};
 		let slotIds = req.body.resvSlotId;
-		let user_id = req.session.user_id;
+		let user_id = req.user.user_id;
 		let attending = req.body.attend;
 		let eventId = req.body.eventId;
 		let existingResponse = await respondsToRequest.getResponse(user_id, eventId);
@@ -91,7 +91,7 @@ router.post('/make-reservations', async function (req, res, next) {
 
 // Delete the specified reservation from the Reserve_Slot table
 router.post('/make-reservations/delete', async function (req, res, next) {
-	let user_id = req.session.user_id;
+	let user_id = req.user.user_id;
 	let slotId = req.body.slotId;
 	let slotInfo = await slot.findSlot(slotId);
 	let eventId = slotInfo.fk_event_id;

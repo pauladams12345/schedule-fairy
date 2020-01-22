@@ -14,7 +14,7 @@ var Router = 			require('express-promise-router'),
 // Display the Manage Event page
 router.get('/manage/:eventId', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.user_id) {
+	if (!req.user) {
 		res.redirect('/login');
 	}
 	else {
@@ -24,7 +24,7 @@ router.get('/manage/:eventId', async function (req, res, next) {
 		let event_organizers = await createsEvent.getEventOrganizers(eventId);
 		let is_organizer = false;
 		for (let event_organizer of event_organizers) {
-			if (event_organizer.organizer == req.session.user_id) {
+			if (event_organizer.organizer == req.user.user_id) {
 				is_organizer = true;
 				break;
 			}

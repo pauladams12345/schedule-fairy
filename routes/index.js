@@ -8,35 +8,29 @@ var Router = 		require('express-promise-router'),
 	email =			require('../helpers/email.js'),
 	passport = 		require('passport'); 
 
-// // Redirects new arrivals to landing page. Handles authentication
-// // for users redirected from CAS login then redirects to personal homepage
-// router.get('/:destination', async function (req, res, next) {
-
-// 	// If the user is not logged in, store their destination and redirect to login
-// 	if (!req.session.user_id) {
-// 		req.session.destination = req.query.destination || "/";	// If destination is not specified, 
-// 		res.redirect('/login');									// redirect to their homepage after login.
-// 	}
-
-// 	// If user is logged in, redirect to the homepage
-// 	else {
-// 		res.redirect('/home');
-// 	}
-	
-// });
+//
+router.get('/', async function(req, res, next) {
+	res.redirect('/home');
+})
 
 // Displays user's personal homepage
 router.get('/home', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.user.user_id) {
-		//res.redirect('/login');
-		res.render('home', {});
+	if (!req.user) {
+		res.redirect('/login');
 	}
-	// If there is a session, render user's homepage
+	// If there is a session, check if user was trying to reach a particular event's reservation page
+	else if (req.session.eventId) {
+		let eventId = req.session.eventId;
+		delete req.session.eventId;
+		res.redirect('/make-reservations/' + eventId);
+
+	}
+	// There is a session. Send user to their homepage
 	else {
 		let context = {};
-		context.eventsManaging = await createsEvent.getUpcomingUserEvents(req.session.user_id);
-		context.eventsAttending = await helpers.processUpcomingReservationsForDisplay(req.session.user_id);
+		context.eventsManaging = await createsEvent.getUpcomingUserEvents(req.user.user_id);
+		context.eventsAttending = await helpers.processUpcomingReservationsForDisplay(req.user.user_id);
 		context.name = req.user.name;
 		context.stylesheets = ['main.css'];
 		context.scripts = ['convertISOToLocal.js', 'home.js'];
