@@ -28,7 +28,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Configure sessions
 app.use(session({
-  secret: "We should pick a real secret",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: sessionStore

@@ -2,9 +2,9 @@ committed
 more config for google auth
 Code review and cleanup for passport authentication
 Create login page with Google button
+Redirect user to their original destination after login
 
 planned commits
-Redirect user to their original destination after login
 Secure session secret
 Update indaba branding
 Modify color scheme
