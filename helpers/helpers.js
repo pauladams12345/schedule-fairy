@@ -1,8 +1,6 @@
 // Miscellaneous helper functions
 
-var parser =	require('xml2json'),
-	rp = 		require('request-promise-native'),
-	user =		require('../models/user.js'),
+var user =		require('../models/user.js'),
 	slot =    	require('../models/slot.js'),
 	event =		require('../models/event.js');
 

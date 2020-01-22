@@ -3,9 +3,6 @@
 var Router = 		require('express-promise-router'),
 	router = 		new Router(),						// allows asynchronous route handlers
 	session = 		require('express-session'),
-	slot =			require('../models/slot.js'),
-	event =			require('../models/event.js'),
-	invitation =	require('../models/invitation.js'),
 	createsEvent =	require('../models/createsEvent.js'),
 	helpers = 		require('../helpers/helpers.js'),
 	email =			require('../helpers/email.js'),
@@ -30,7 +27,6 @@ var Router = 		require('express-promise-router'),
 
 // Displays user's personal homepage
 router.get('/home', async function (req, res, next) {
-	console.log('In home. req.session: ', req.session);
 	// If there is no session established, redirect to the landing page
 	if (!req.user.user_id) {
 		//res.redirect('/login');
@@ -57,20 +53,15 @@ router.get('/login', async function (req, res, next) {
 	res.render('login.handlebars', context);
 });
 
+// Authenticate user with google OAuth
 router.get('/login/google',
-	passport.authenticate('google', {scope: ['profile', 'email']}));
+	passport.authenticate('google', {scope: ['profile', 'email']}));		// send user to google sign in; retrieve their profile and email
 
+// Check for valid authentication after user is redirected from google sign in
 router.get('/auth/google',
-	passport.authenticate('google', { failureRedirect: '/login/failed'}),
-	function(req, res) { res.redirect('/home'); }
+	passport.authenticate('google', { failureRedirect: '/login/failed' }),	// check authentication, redirect on failure
+	function(req, res) { res.redirect('/home'); }							// authentication is valid; redirect to homepage
 );
-
-// Log user in and redirect to their destination, else return user to login page
-// router.post('/login', 
-// 	passport.authenticate('local', {failureRedirect: '/login'}),
-// 	function(req, res) {
-// 		res.redirect(req.session.destination);
-// 	});
 
 // Destroys current session and redirects to landing page
 router.get('/logout', async function (req, res, next) {
