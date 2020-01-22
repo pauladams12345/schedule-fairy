@@ -3,7 +3,7 @@
     <div class="jumbotron py-4 my-4">
       <div class="row d-flex justify-content-center">
         <div class="col-12 col-lg-10">
-          <h1 class="display-4">Hello, {{firstName}}!</h1>
+          <h1 class="display-4">Hello, {{name}}!</h1>
           <p class="lead">Start organizing an event by clicking the button below.</p>
           <a class="btn btn-primary btn-lg" href="/create" role="button">Create Event</a>
         </div>
@@ -89,9 +89,8 @@
           <tbody>
             {{#each this.attendees}}
             <tr>
-              <td>{{this.first_name}}</td>
-              <td>{{this.last_name}}</td>
-              <td>{{this.ONID_email}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.email}}</td>
             </tr>
             {{/each}}
           </tbody>

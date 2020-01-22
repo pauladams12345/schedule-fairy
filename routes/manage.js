@@ -14,7 +14,7 @@ var Router = 			require('express-promise-router'),
 // Display the Manage Event page
 router.get('/manage/:eventId', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.onid) {
+	if (!req.session.user_id) {
 		res.redirect('/login');
 	}
 	else {
@@ -24,7 +24,7 @@ router.get('/manage/:eventId', async function (req, res, next) {
 		let event_organizers = await createsEvent.getEventOrganizers(eventId);
 		let is_organizer = false;
 		for (let event_organizer of event_organizers) {
-			if (event_organizer.organizer == req.session.onid) {
+			if (event_organizer.organizer == req.session.user_id) {
 				is_organizer = true;
 				break;
 			}
@@ -63,9 +63,9 @@ router.get('/manage/:eventId', async function (req, res, next) {
 
 // Process reservation deletions
 router.post('/manage/delete-reservation', async function (req, res, next) {
-	let onid = req.body.onid;
+	let user_id = req.body.user_id;
 	let slotId = req.body.slotId;
-	await reserveSlot.deleteReservation(onid, slotId);
+	await reserveSlot.deleteReservation(user_id, slotId);
 	res.send('Success');
 });
 
@@ -245,10 +245,10 @@ router.post('/manage/:eventId/edit-slots', async function (req, res, next) {
 // Process the "Manually make a reservation" form
 router.post('/manage/:eventId/manual-reservation', async function (req, res, next) {
 	let eventId = req.params.eventId;
-	let onid = req.body.manualReservationONID;
+	let user_id = req.body.manualReservationONID;
 	let slotId = req.body.manualReservationSlotId;
-	if (onid && slotId){
-		await reserveSlot.createReservation(onid, slotId);
+	if (user_id && slotId){
+		await reserveSlot.createReservation(user_id, slotId);
 	}
 	res.send('Success');
 });

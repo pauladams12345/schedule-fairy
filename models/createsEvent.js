@@ -4,13 +4,13 @@ var	dbcon = 	require('../config/dbcon.js'),
 	sql =   	require('mysql2/promise');
 
 // Create a row in the Creates_Event table with the given information
-module.exports.createCreatesEvent = async function(eventId, onid) {
+module.exports.createCreatesEvent = async function(eventId, user_id) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
-		"INSERT INTO `indaba_db`.`Creates_Event` " +
-		"(`fk_event_id`, `fk_onid`) VALUES (?, ?);", 
-		[eventId, onid]);
+		"INSERT INTO `Creates_Event` " +
+		"(`fk_event_id`, `fk_user_id`) VALUES (?, ?);", 
+		[eventId, user_id]);
 		connection.end();
 	}
 	catch (err) {
@@ -20,16 +20,16 @@ module.exports.createCreatesEvent = async function(eventId, onid) {
 
 // Get name and event id for all events a user has created with an expiration date
 // of yesterday or later. Also returns events with a NULL expiration date.
-module.exports.getUpcomingUserEvents = async function(onid) {
+module.exports.getUpcomingUserEvents = async function(user_id) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-		"SELECT e.event_name, e.event_id, ce.fk_onid AS organizer " +
+		"SELECT e.event_name, e.event_id, ce.fk_user_id AS organizer " +
 		"FROM `Event` e " +
 		"INNER JOIN `Creates_Event` ce ON e.event_id = ce.fk_event_id " +
-		"WHERE ce.fk_onid = ? AND (e.expiration_date >= CURDATE() - INTERVAL 1 DAY " +
+		"WHERE ce.fk_user_id = ? AND (e.expiration_date >= CURDATE() - INTERVAL 1 DAY " +
 		"OR e.expiration_date IS NULL);",
-		[onid]);
+		[user_id]);
 		connection.end();
 		return rows;
 	}
@@ -40,15 +40,15 @@ module.exports.getUpcomingUserEvents = async function(onid) {
 
 // Get event id for all events a user has created with an expiration date
 // of yesterday or earlier
-module.exports.getPastUserEvents = async function(onid) {
+module.exports.getPastUserEvents = async function(user_id) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
 		"SELECT e.event_id " +
 		"FROM `Event` e " +
 		"INNER JOIN `Creates_Event` ce ON e.event_id = ce.fk_event_id " +
-		"WHERE ce.fk_onid = ? AND e.expiration_date < CURDATE() - INTERVAL 1 DAY;",
-		[onid]);
+		"WHERE ce.fk_user_id = ? AND e.expiration_date < CURDATE() - INTERVAL 1 DAY;",
+		[user_id]);
 		connection.end();
 		return rows;
 	}
@@ -62,7 +62,7 @@ module.exports.getEventOrganizers = async function(eventId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-		"SELECT ce.fk_onid AS organizer " +
+		"SELECT ce.fk_user_id AS organizer " +
 		"FROM `Creates_Event` ce " +
 		"WHERE ce.fk_event_id = ?;", [eventId]);
 		connection.end();

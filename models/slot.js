@@ -5,22 +5,22 @@ var	dbcon = 	require('../config/dbcon.js'),
 
 // Query database for all slots which a user has reserved with a
 // date of yesterday or earlier
-module.exports.findPastUserSlots = async function(onid) {
+module.exports.findPastUserSlots = async function(user_id) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
 			"SELECT s.slot_id, s.slot_date," +
 			"s.start_time, s.end_time, s.duration, s.slot_location, " +
 			"e.event_name, e.description, e.event_id, e.visibility, " +
-			"om.first_name AS creator_first_name, om.last_name AS creator_last_name " +
+			"u.name AS creator_name " +
 			"FROM `Slot` s " +
 			"INNER JOIN `Reserve_Slot` rs ON s.slot_id = rs.fk_slot_id " +
 			"INNER JOIN `Event` e ON s.fk_event_id = e.event_id " +
 			"INNER JOIN `Creates_Event` ce ON s.fk_event_id = ce.fk_event_id " +
-			"INNER JOIN `OSU_member` om ON ce.fk_onid = om.onid " +
-			"WHERE rs.fk_onid = ? AND s.slot_date < CURDATE() - INTERVAL 1 DAY " +
+			"INNER JOIN `user` u ON ce.fk_user_id = u.user_id " +
+			"WHERE rs.fk_user_id = ? AND s.slot_date < CURDATE() - INTERVAL 1 DAY " +
 			"ORDER BY s.slot_date",
-			[onid]);
+			[user_id]);
 		connection.end();
 		return rows;
 	}
@@ -31,22 +31,22 @@ module.exports.findPastUserSlots = async function(onid) {
 
 // Query database for all slots which a user has reserved with a
 // date of yesterday or later
-module.exports.findUpcomingUserSlots = async function(onid) {
+module.exports.findUpcomingUserSlots = async function(user_id) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
 			"SELECT s.slot_id, s.slot_date," +
 			"s.start_time, s.end_time, s.duration, s.slot_location, " +
 			"e.event_name, e.description, e.event_id, e.visibility, " +
-			"om.first_name AS creator_first_name, om.last_name AS creator_last_name " +
+			"u.name AS creator_name " +
 			"FROM `Slot` s " +
 			"INNER JOIN `Reserve_Slot` rs ON s.slot_id = rs.fk_slot_id " +
 			"INNER JOIN `Event` e ON s.fk_event_id = e.event_id " +
 			"INNER JOIN `Creates_Event` ce ON s.fk_event_id = ce.fk_event_id " +
-			"INNER JOIN `OSU_member` om ON ce.fk_onid = om.onid " +
-			"WHERE rs.fk_onid = ? AND s.slot_date >= CURDATE() - INTERVAL 1 DAY " +
+			"INNER JOIN `user` u ON ce.fk_user_id = u.user_id " +
+			"WHERE rs.fk_user_id = ? AND s.slot_date >= CURDATE() - INTERVAL 1 DAY " +
 			"ORDER BY s.slot_date",
-			[onid]);
+			[user_id]);
 		connection.end();
 		return rows;
 	}
@@ -76,10 +76,10 @@ module.exports.findSlotAttendees = async function(slotId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-		"SELECT om.first_name, om.last_name, om.ONID_email, om.onid " +
+		"SELECT u.name, u.email, u.user_id " +
 		"FROM `Reserve_Slot` rs " +
 		"INNER JOIN `Slot` s ON rs.fk_slot_id = s.slot_id " +
-		"INNER JOIN `OSU_member` om ON rs.fk_onid = om.onid " +
+		"INNER JOIN `user` u ON rs.fk_user_id = u.user_id " +
 		"WHERE slot_id = ?", [slotId]);
 		connection.end();
 		return rows;
@@ -114,11 +114,11 @@ module.exports.eventSlotResv = async function(eventId){
 	try{
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-		"SELECT first_name, last_name, slot_id, onid, " +
-		"ONID_email, slot_date, start_time, end_time, location FROM  `Event` " +
+		"SELECT name, slot_id, user_id, " +
+		"email, slot_date, start_time, end_time, location FROM  `Event` " +
 		"INNER JOIN `Slot` ON fk_event_id = event_id " +
 		"INNER JOIN `Reserve_Slot` ON fk_slot_id = slot_id " +
-		"INNER JOIN `OSU_member` ON fk_onid = onid " +
+		"INNER JOIN `user` ON fk_user_id = user_id " +
 		"WHERE event_id = ? " +
 		"ORDER BY slot_date", 
 		[eventId]);
@@ -135,7 +135,7 @@ module.exports.createSlot = async function(eventId, location, date, startTime, e
 	try{
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
-		"INSERT INTO `indaba_db`.`Slot` " +
+		"INSERT INTO `Slot` " +
 		"(`fk_event_id`, `slot_location`, `slot_date`, `start_time`, " +
 		"`end_time`, `duration`, max_attendees) " +
 		"VALUES (?, ?, ?, ?, ?, ?, ?);",

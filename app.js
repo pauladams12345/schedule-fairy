@@ -1,38 +1,46 @@
 // Base application. Run from terminal with "node app.js"
 
 var express =       require('express'),
-    bodyParser =    require('body-parser'),
-    session =       require('express-session'),
-    handlebars =    require('express-handlebars'),
-    request =       require('request'),
-    dbcon =         require('./config/dbcon.js'),
-    helmet =        require('helmet'),
-    MySQLStore =    require('express-mysql-session')(session),
-    sessionStore =  new MySQLStore(dbcon);
+  bodyParser =      require('body-parser'),
+  session =         require('express-session'),
+  handlebars =      require('express-handlebars'),
+  dbcon =           require('./config/dbcon.js'),
+  helmet =          require('helmet'),
+  MySQLStore =      require('express-mysql-session')(session),
+  sessionStore =    new MySQLStore(dbcon),
+  passport =        require('passport');
 
 var app = express();
 
-// configure bodyParser
+// Configure bodyParser
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
 
-// set handlebars as view engine, allow omission of .handlebars extension
+// Set handlebars as view engine, allow omission of .handlebars extension
 app.engine('handlebars', handlebars({
-    defaultLayout: 'main',
-    helpers: require('./helpers/handlebarsHelpers.js')
+  defaultLayout: 'main',
+  helpers: require('./helpers/handlebarsHelpers.js')
 }));
 app.set('view engine', 'handlebars');
 
-// set up access to public folder
+// Set up access to public folder
 app.use(express.static(__dirname + '/public'));
 
-// configure sessions
+// Configure sessions
 app.use(session({
-    secret: "We should pick a real secret",
-    resave: false,
-    saveUninitialized: false,
-    store: sessionStore
+  secret: "We should pick a real secret",
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore
 }));
+
+// Initialize passport authentication
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure passport authentication strategies
+passportConfig =  require('./config/passport.js')(passport);
+
 
 // Set security-related http headers
 app.use(helmet());
@@ -46,20 +54,21 @@ app.use(require('./routes/makeReservations.js'));
 app.use(require('./routes/pastEvents.js'));
 
 
-// handle errors
+// Handle 404 error
 app.use(function(req,res){
-    res.status(404);
-    res.render('404');
+  res.status(404);
+  res.render('404');
 });
 
+// Handle 500 error
 app.use(function(err,req,res,next){
-    console.error(err.stack);
-    res.type('plain/text');
-    res.status(500);
-    res.send('500');
+  console.error(err.stack);
+  res.type('plain/text');
+  res.status(500);
+  res.send('500');
 });
 
-// start server
+// Start server
 app.listen(process.env.PORT || 3000, function(){
-    console.log('Schedule Fairy server started!');
+  console.log('Schedule Fairy server started!');
 });

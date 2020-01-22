@@ -253,9 +253,9 @@ function configureReservations() {
     var buttons = document.getElementsByClassName('reservation-delete');
     for (var i = 0; i < buttons.length; i++) {
       var reservation = buttons[i].parentNode.parentNode;
-      var onid = reservation.firstElementChild.textContent;
+      var user_id = reservation.firstElementChild.textContent;
       var slotId = reservation.firstElementChild.nextElementSibling.textContent;
-      bindReservationDelete(buttons[i], reservation, onid, slotId);
+      bindReservationDelete(buttons[i], reservation, user_id, slotId);
     }
   });
 }
@@ -400,13 +400,13 @@ function configureManualRegistration() {
 }
 
 // Bind the delete button for an entry in the "Reservations" table
-function bindReservationDelete(button, reservation, onid, slotId) {
+function bindReservationDelete(button, reservation, user_id, slotId) {
   button.addEventListener('click', function(event) {
     // Send ajax request to delete reservation
     $.ajax({
       url : '/manage/delete-reservation',
       type: 'POST',
-      data: $.param({"onid": onid, "slotId": slotId}),
+      data: $.param({"user_id": user_id, "slotId": slotId}),
       error: function (jXHR, textStatus, errorThrown) {
         alert(errorThrown);
       }

@@ -9,7 +9,7 @@ module.exports.createEvent = async function(eventName, location,
 	try {
 		const connection = await sql.createConnection(dbcon);
 		await connection.query(
-		"INSERT INTO `indaba_db`.`Event` " +
+		"INSERT INTO `Event` " +
 		"(`event_name`, `location`, `max_attendee_per_slot`, " +
 		"`max_resv_per_attendee`, `description`, `visibility`) " +
 		"VALUES (?, ?, ?, ?, ?, ?);",
@@ -47,14 +47,14 @@ module.exports.getEventCreator = async function(eventId) {
 	try {
 		const connection = await sql.createConnection(dbcon);
 		const [rows, fields] = await connection.query(
-			"SELECT om.first_name, om.last_name " +
-			"FROM `OSU_member` om " +
-			"INNER JOIN `Creates_Event` ce ON om.onid = ce.fk_onid " +
+			"SELECT u.name " +
+			"FROM `user` u " +
+			"INNER JOIN `Creates_Event` ce ON u.user_id = ce.fk_user_id " +
 			"INNER JOIN `Event` e ON ce.fk_event_id = e.event_id " +
 			"WHERE e.event_id = ? ",
 			[eventId]);
 		connection.end();
-		return rows[0].first_name + " " + rows[0].last_name;
+		return rows[0].name;
 	}
 	catch (err) {
 		console.log(err);

@@ -12,16 +12,16 @@ var Router = 		require('express-promise-router'),
 // Display a user's Past Reservations page
 router.get('/past-reservations', async function (req, res, next) {
 	// If there is no session established, redirect to the landing page
-	if (!req.session.onid) {
+	if (!req.session.user_id) {
 		res.redirect('/login');
 	}
 
 	// If there is a session, render user's past reservations
 	else {
 		let context = {};
-		context.eventsManaging = await createsEvent.getPastUserEvents(req.session.onid);
-		context.eventsAttending = await helpers.processPastReservationsForDisplay(req.session.onid);
-		context.firstName = req.session.firstName;
+		context.eventsManaging = await createsEvent.getPastUserEvents(req.session.user_id);
+		context.eventsAttending = await helpers.processPastReservationsForDisplay(req.session.user_id);
+		context.name = req.user.name;
 		context.stylesheets = ['main.css'];
 		context.scripts = ['convertISOToLocal.js'];
 		res.render('past-reservations', context);
