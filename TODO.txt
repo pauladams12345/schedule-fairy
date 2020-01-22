@@ -4,9 +4,10 @@ Code review and cleanup for passport authentication
 Create login page with Google button
 Redirect user to their original destination after login
 Secure session secret
+Modify color scheme
+
 
 planned commits
-Modify color scheme
 Add facebook authentication strategy
 	set up facebook account ????
 	add facebook auth module
