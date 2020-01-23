@@ -8,15 +8,16 @@ Modify color scheme
 
 
 planned commits
+Remove obsolete code
+Testing and bug fixes
+
+wish list
+Add feature to change email
+Add feature to change name
 Add facebook authentication strategy
 	set up facebook account ????
 	add facebook auth module
 	add facebook button to login page
 	set up app strategy
 	handle edge cases for existing users logging in w/ new auth provider
-Remove obsolete code
-Testing and bug fixes
 Add privacy policy at /privacy-policy
-
-Add feature to change email
-Add feature to change name
