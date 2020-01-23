@@ -4,61 +4,6 @@ var user =		require('../models/user.js'),
 	slot =    	require('../models/slot.js'),
 	event =		require('../models/event.js');
 
-// // Send validation request to CAS server with ticket, return attributes from response
-// module.exports.validateTicket = async function(cas_ticket){
-// 	try {
-// 		// Options for the CAS validation request
-// 		let options = {
-// 			method: 'GET',
-// 			uri: 'https://login.oregonstate.edu/idp/profile/cas/serviceValidate',
-// 			headers: {
-// 				'Content-Type': 'text/xml'
-// 			},
-// 			qs: {
-// 				ticket: cas_ticket,
-// 				service: 'https://indaba-scheduler.herokuapp.com/'
-// 			}
-// 		};
-
-// 		// Validate ticket
-// 		const cas_info = await rp(options);
-
-// 		// Parse results from validation, converting from XML to JSON
-// 		let response = JSON.parse(parser.toJson(cas_info));
-// 		let cas_attributes = response['cas:serviceResponse']['cas:authenticationSuccess']['cas:attributes'];
-
-// 		// Extract user's attributes
-// 		let attributes = {};
-// 		attributes.onid = cas_attributes['cas:uid'];
-// 		attributes.firstName = cas_attributes['cas:firstname'];
-// 		attributes.lastName = cas_attributes['cas:lastname'];
-// 		attributes.fullName = cas_attributes['cas:fullname'];
-// 		attributes.email = cas_attributes['cas:email'];
-
-// 		// Return user's attributes
-// 		return attributes;
-// 	}
-// 	catch (err) {
-// 		console.log(err);
-// 	}
-// };
-
-// // Check if user exists in database. If not, create an entry.
-// module.exports.createUserIfNew = async function(attributes){
-// 	try {
-// 		// Check if user exists
-// 		const rows = await user.findUser(attributes.onid);
-
-// 		// If not, add an entry
-// 		if (rows.length == 0) {
-// 			await user.createUser(attributes.onid, attributes.firstName, attributes.lastName, attributes.email);
-// 		}
-// 	}
-// 	catch (err){
-// 		console.log(err);
-// 	}
-// };
-
 // Take a JS date object, convert it to an ISO-formatted string,
 // and extract the date and time from that string
 module.exports.parseDateTimeString = function (slot){

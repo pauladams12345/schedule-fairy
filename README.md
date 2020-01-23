@@ -1,6 +1,6 @@
 # Schedule Fairy
 
-Schedule fairy is a free, open-source meeting scheduling app. Create your event. Send invitations. Manage RSVPs. It's all as simple as waving a magic wand!
+Schedule fairy is a free, open-source meeting scheduling app. Create your event. Send invitations. Manage RSVPs. So simple it's like magic!
 
 [Try it now](https://schedule-fairy.herokuapp.com/)
 
